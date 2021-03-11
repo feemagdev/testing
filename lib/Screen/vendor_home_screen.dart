@@ -90,8 +90,7 @@ class _MyAppState extends State<VendorHomeScreen>
             }
 
             if (i < _catList.length - 1) {
-              offsetTo =
-                  offsetFrom + _prodList[i + 1].length * productHeight + 300;
+              offsetTo = offsetFrom + _prodList[i].length * productHeight + 120;
             } else {
               offsetTo = double.infinity;
             }
@@ -145,11 +144,12 @@ class _MyAppState extends State<VendorHomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (top == 80) {
+    if (top < 85) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
           left = 0;
           right = 0;
+          position = 0;
         });
       });
     }
@@ -177,7 +177,7 @@ class _MyAppState extends State<VendorHomeScreen>
                 CustomScrollView(
                   controller: _scrollController,
                   slivers: [
-                    top == 80
+                    top < 85
                         ? SliverAppBar(
                             backgroundColor: Colors.white,
                             floating: false,
@@ -194,9 +194,10 @@ class _MyAppState extends State<VendorHomeScreen>
                                     position = constraints.biggest.height -
                                         MediaQuery.of(context).size.height *
                                             0.08;
-                                    if (top == 80) {
+                                    if (top < 85) {
                                       left = 0;
                                       right = 0;
+                                      position = 0;
                                     } else {
                                       left = constraints.biggest.height / 5;
                                       right = constraints.biggest.height / 5;
@@ -225,8 +226,15 @@ class _MyAppState extends State<VendorHomeScreen>
                                     position = constraints.biggest.height -
                                         MediaQuery.of(context).size.height *
                                             0.08;
-                                    left = constraints.biggest.height / 5;
-                                    right = constraints.biggest.height / 5;
+
+                                    if (top < 85) {
+                                      left = 0;
+                                      right = 0;
+                                      position = 0;
+                                    } else {
+                                      left = constraints.biggest.height / 5;
+                                      right = constraints.biggest.height / 5;
+                                    }
                                   });
                                 });
                                 return FlexibleSpaceBar(
@@ -239,7 +247,7 @@ class _MyAppState extends State<VendorHomeScreen>
                             ),
                           ),
                     SliverPadding(
-                      padding: EdgeInsets.only(top: top == 80 ? 200 : 100),
+                      padding: EdgeInsets.only(top: top < 85 ? 200 : 100),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
@@ -264,7 +272,8 @@ class _MyAppState extends State<VendorHomeScreen>
                   child: Container(
                     height: 150,
                     child: Padding(
-                      padding: EdgeInsets.all(10.0),
+                      padding: EdgeInsets.only(
+                          top: 20.0, right: 10.0, bottom: 10.0, left: 10.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -273,7 +282,7 @@ class _MyAppState extends State<VendorHomeScreen>
                             children: [
                               Row(
                                 children: [
-                                  top == 80
+                                  top < 85
                                       ? IconButton(
                                           icon: Icon(Icons.arrow_back),
                                           onPressed: () {
@@ -286,7 +295,7 @@ class _MyAppState extends State<VendorHomeScreen>
                                   ),
                                 ],
                               ),
-                              top == 80
+                              top < 85
                                   ? Icon(
                                       Icons.search_sharp,
                                       size: 30,
@@ -294,7 +303,7 @@ class _MyAppState extends State<VendorHomeScreen>
                                   : Container(),
                             ],
                           ),
-                          top != 80
+                          top >= 85
                               ? Expanded(
                                   child: Container(
                                     child: Padding(
