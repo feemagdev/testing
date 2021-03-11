@@ -144,15 +144,7 @@ class _MyAppState extends State<VendorHomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (top < 85) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        setState(() {
-          left = 0;
-          right = 0;
-          position = 0;
-        });
-      });
-    }
+    double topheight = MediaQuery.of(context).padding.top;
 
     var _store = Provider.of<StoreProvider>(context);
 
@@ -177,83 +169,54 @@ class _MyAppState extends State<VendorHomeScreen>
                 CustomScrollView(
                   controller: _scrollController,
                   slivers: [
-                    top < 85
-                        ? SliverAppBar(
-                            backgroundColor: Colors.white,
-                            floating: false,
-                            pinned: true,
-                            expandedHeight: 80,
-                            elevation: 0,
-                            flexibleSpace: LayoutBuilder(
-                              builder: (BuildContext context,
-                                  BoxConstraints constraints) {
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  setState(() {
-                                    top = constraints.biggest.height;
-                                    position = constraints.biggest.height -
-                                        MediaQuery.of(context).size.height *
-                                            0.08;
-                                    if (top < 85) {
-                                      left = 0;
-                                      right = 0;
-                                      position = 0;
-                                    } else {
-                                      left = constraints.biggest.height / 5;
-                                      right = constraints.biggest.height / 5;
-                                    }
-                                  });
-                                });
-                                // print('constraints=' + constraints.toString());
-
-                                return FlexibleSpaceBar();
-                              },
-                            ),
-                          )
-                        : SliverAppBar(
-                            backgroundColor: Colors.white,
-                            expandedHeight: 200.0,
-                            floating: false,
-                            pinned: true,
-                            flexibleSpace: LayoutBuilder(
-                              builder: (BuildContext context,
-                                  BoxConstraints constraints) {
-                                // print('constraints=' + constraints.toString());
-                                WidgetsBinding.instance
-                                    .addPostFrameCallback((_) {
-                                  setState(() {
-                                    top = constraints.biggest.height;
-                                    position = constraints.biggest.height -
-                                        MediaQuery.of(context).size.height *
-                                            0.08;
-
-                                    if (top < 85) {
-                                      left = 0;
-                                      right = 0;
-                                      position = 0;
-                                    } else {
-                                      left = constraints.biggest.height / 5;
-                                      right = constraints.biggest.height / 5;
-                                    }
-                                  });
-                                });
-                                return FlexibleSpaceBar(
-                                    centerTitle: true,
-                                    background: Image.network(
-                                      _store.storedetails['imageurl'],
-                                      fit: BoxFit.cover,
-                                    ));
-                              },
-                            ),
-                          ),
+                    SliverAppBar(
+                      backgroundColor: Colors.white,
+                      expandedHeight: 200.0,
+                      toolbarHeight: 80,
+                      floating: false,
+                      pinned: true,
+                      flexibleSpace: LayoutBuilder(
+                        builder:
+                            (BuildContext context, BoxConstraints constraints) {
+                          // print('constraints=' + constraints.toString());
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            setState(() {
+                              top = constraints.biggest.height;
+                              position = constraints.biggest.height;
+                              if (top < 82 + topheight) {
+                                position = 0 + topheight;
+                              }
+                            });
+                          });
+                          return FlexibleSpaceBar(
+                              centerTitle: true,
+                              background: Image.network(
+                                _store.storedetails['imageurl'],
+                                fit: BoxFit.cover,
+                              ));
+                        },
+                      ),
+                    ),
                     SliverPadding(
-                      padding: EdgeInsets.only(top: top < 85 ? 200 : 100),
+                      padding: EdgeInsets.only(
+                          top: top <= 85 + topheight ? 100 : 200),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
                             final item = pd[index];
                             if (item.isCategory) {
-                              return _RappiTabCategoryItem(item.category);
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Divider(
+                                    height: 10,
+                                  ),
+                                  SizedBox(
+                                    height: 5,
+                                  ),
+                                  _RappiTabCategoryItem(item.category),
+                                ],
+                              );
                             } else {
                               return _RappiTabProductItem(item.products);
                             }
@@ -264,11 +227,10 @@ class _MyAppState extends State<VendorHomeScreen>
                     ),
                   ],
                 ),
-                AnimatedPositioned(
-                  duration: Duration(milliseconds: 100),
+                Positioned(
                   top: position,
-                  left: left,
-                  right: right,
+                  left: 0,
+                  right: 0,
                   child: Container(
                     height: 150,
                     child: Padding(
@@ -282,7 +244,7 @@ class _MyAppState extends State<VendorHomeScreen>
                             children: [
                               Row(
                                 children: [
-                                  top < 85
+                                  top < 85 + topheight
                                       ? IconButton(
                                           icon: Icon(Icons.arrow_back),
                                           onPressed: () {
@@ -295,7 +257,7 @@ class _MyAppState extends State<VendorHomeScreen>
                                   ),
                                 ],
                               ),
-                              top < 85
+                              top < 85 + topheight
                                   ? Icon(
                                       Icons.search_sharp,
                                       size: 30,
@@ -303,7 +265,7 @@ class _MyAppState extends State<VendorHomeScreen>
                                   : Container(),
                             ],
                           ),
-                          top >= 85
+                          top >= 85 + topheight
                               ? Expanded(
                                   child: Container(
                                     child: Padding(
@@ -488,34 +450,51 @@ class _RappiTabProductItem extends StatelessWidget {
     return Container(
       height: productHeight,
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              product['productName'],
-              textScaleFactor: 1.1,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              product['description'],
-              textScaleFactor: 1.1,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: Colors.grey[700]),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              '\$' + product['price'].toString(),
-              textScaleFactor: 1.1,
-            ),
-          ],
-        ),
-      ),
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width * .70,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product['productName'],
+                      textScaleFactor: 1.1,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      product['description'],
+                      textScaleFactor: 1.1,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      '\$' + product['price'].toString(),
+                      textScaleFactor: 1.1,
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      image: NetworkImage(product['productImage']),
+                      fit: BoxFit.fill),
+                ),
+              ),
+            ],
+          )),
     );
   }
 }
