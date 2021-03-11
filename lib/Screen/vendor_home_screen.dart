@@ -85,6 +85,9 @@ class _MyAppState extends State<VendorHomeScreen>
             if (i > 0) {
               offsetFrom += _prodList[i - 1].length * productHeight + 120;
             }
+            if (i == _catList.length - 1) {
+              offsetFrom += productHeight * _prodList[i].length;
+            }
 
             if (i < _catList.length - 1) {
               offsetTo =
@@ -180,6 +183,7 @@ class _MyAppState extends State<VendorHomeScreen>
                             floating: false,
                             pinned: true,
                             expandedHeight: 80,
+                            elevation: 0,
                             flexibleSpace: LayoutBuilder(
                               builder: (BuildContext context,
                                   BoxConstraints constraints) {
@@ -187,7 +191,9 @@ class _MyAppState extends State<VendorHomeScreen>
                                     .addPostFrameCallback((_) {
                                   setState(() {
                                     top = constraints.biggest.height;
-                                    position = constraints.biggest.height - 50;
+                                    position = constraints.biggest.height -
+                                        MediaQuery.of(context).size.height *
+                                            0.08;
                                     if (top == 80) {
                                       left = 0;
                                       right = 0;
@@ -216,7 +222,9 @@ class _MyAppState extends State<VendorHomeScreen>
                                     .addPostFrameCallback((_) {
                                   setState(() {
                                     top = constraints.biggest.height;
-                                    position = constraints.biggest.height - 50;
+                                    position = constraints.biggest.height -
+                                        MediaQuery.of(context).size.height *
+                                            0.08;
                                     left = constraints.biggest.height / 5;
                                     right = constraints.biggest.height / 5;
                                   });
