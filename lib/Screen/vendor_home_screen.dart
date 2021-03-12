@@ -159,7 +159,7 @@ class _MyAppState extends State<VendorHomeScreen>
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       body: isLoading
           ? Center(
               child: CircularProgressIndicator(),
@@ -170,11 +170,43 @@ class _MyAppState extends State<VendorHomeScreen>
                   controller: _scrollController,
                   slivers: [
                     SliverAppBar(
-                      backgroundColor: Colors.white,
-                      expandedHeight: 200.0,
+                      backgroundColor: Colors.grey[100],
+                      expandedHeight: MediaQuery.of(context).size.height * 0.35,
+                      centerTitle: true,
+                      automaticallyImplyLeading: false,
                       toolbarHeight: 80,
                       floating: false,
                       pinned: true,
+                      title: Opacity(
+                        opacity: top < 82 + topheight ? 1.0 : 0.0,
+                        child: Text(
+                          _store.storedetails['shopName'],
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                      leading: IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.black,
+                        ),
+                      ),
+                      actions: [
+                        IconButton(
+                            icon: Icon(
+                              Icons.favorite,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {}),
+                        IconButton(
+                            icon: Icon(
+                              Icons.search,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {})
+                      ],
                       flexibleSpace: LayoutBuilder(
                         builder:
                             (BuildContext context, BoxConstraints constraints) {
@@ -184,41 +216,129 @@ class _MyAppState extends State<VendorHomeScreen>
                               top = constraints.biggest.height;
                               position = constraints.biggest.height;
                               if (top < 82 + topheight) {
-                                position = 0 + topheight;
+                                position = 80 + topheight;
                               }
                             });
                           });
                           return FlexibleSpaceBar(
-                              centerTitle: true,
-                              background: Image.network(
-                                _store.storedetails['imageurl'],
-                                fit: BoxFit.cover,
-                              ));
+                            background: Container(
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    top: topheight + 80, right: 10, left: 10),
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  padding: EdgeInsets.zero,
+                                  children: [
+                                    Text(
+                                      _store.storedetails['shopName'],
+                                      textScaleFactor: 1.5,
+                                    ),
+                                    Text(
+                                      _store.storedetails['dialog'],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      _store.storedetails['address'],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      _store.storedetails['email'],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      'Distance : ${_store.distanc}km',
+                                      style: TextStyle(),
+                                    ),
+                                    SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.star,
+                                        ),
+                                        Icon(
+                                          Icons.star,
+                                        ),
+                                        Icon(
+                                          Icons.star,
+                                        ),
+                                        Icon(
+                                          Icons.star_half,
+                                        ),
+                                        Icon(
+                                          Icons.star_outline,
+                                        ),
+                                        SizedBox(width: 5),
+                                        Text(
+                                          '(3.5)',
+                                        )
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            child: IconButton(
+                                              icon: Icon(Icons.phone,
+                                                  color: Colors.amber),
+                                              onPressed: () {
+                                                launch(
+                                                    'tel: ${_store.storedetails['moblie']}');
+                                              },
+                                            )),
+                                        SizedBox(width: 3),
+                                        CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            child: IconButton(
+                                              icon: Icon(Icons.map,
+                                                  color: Colors.amber),
+                                              onPressed: () {
+                                                mapLauncher();
+                                              },
+                                            )),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
                         },
                       ),
                     ),
                     SliverPadding(
                       padding: EdgeInsets.only(
-                          top: top <= 85 + topheight ? 100 : 200),
+                        top: 100,
+                      ),
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
                             final item = pd[index];
                             if (item.isCategory) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Divider(
-                                    height: 10,
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  _RappiTabCategoryItem(item.category),
-                                ],
+                              return Container(
+                                width: MediaQuery.of(context).size.width,
+                                color: Colors.white,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Divider(
+                                      height: 10,
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    _RappiTabCategoryItem(item.category),
+                                  ],
+                                ),
                               );
                             } else {
-                              return _RappiTabProductItem(item.products);
+                              return Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: _RappiTabProductItem(item.products),
+                              );
                             }
                           },
                           childCount: pd.length,
@@ -232,160 +352,32 @@ class _MyAppState extends State<VendorHomeScreen>
                   left: 0,
                   right: 0,
                   child: Container(
-                    height: 150,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                          top: 20.0, right: 10.0, bottom: 10.0, left: 10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  top < 85 + topheight
-                                      ? IconButton(
-                                          icon: Icon(Icons.arrow_back),
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          })
-                                      : Container(),
-                                  Text(
-                                    _store.storedetails['shopName'],
-                                    textScaleFactor: 1.7,
-                                  ),
-                                ],
-                              ),
-                              top < 85 + topheight
-                                  ? Icon(
-                                      Icons.search_sharp,
-                                      size: 30,
-                                    )
-                                  : Container(),
-                            ],
-                          ),
-                          top >= 85 + topheight
-                              ? Expanded(
-                                  child: Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ListView(
-                                        shrinkWrap: true,
-                                        padding: EdgeInsets.zero,
-                                        children: [
-                                          Text(
-                                            _store.storedetails['dialog'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            _store.storedetails['address'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            _store.storedetails['email'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            'Distance : ${_store.distanc}km',
-                                            style: TextStyle(),
-                                          ),
-                                          SizedBox(height: 6),
-                                          Row(
-                                            children: [
-                                              Icon(
-                                                Icons.star,
-                                              ),
-                                              Icon(
-                                                Icons.star,
-                                              ),
-                                              Icon(
-                                                Icons.star,
-                                              ),
-                                              Icon(
-                                                Icons.star_half,
-                                              ),
-                                              Icon(
-                                                Icons.star_outline,
-                                              ),
-                                              SizedBox(width: 5),
-                                              Text(
-                                                '(3.5)',
-                                              )
-                                            ],
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              CircleAvatar(
-                                                  backgroundColor: Colors.white,
-                                                  child: IconButton(
-                                                    icon: Icon(Icons.phone,
-                                                        color: Colors.amber),
-                                                    onPressed: () {
-                                                      launch(
-                                                          'tel: ${_store.storedetails['moblie']}');
-                                                    },
-                                                  )),
-                                              SizedBox(width: 3),
-                                              CircleAvatar(
-                                                  backgroundColor: Colors.white,
-                                                  child: IconButton(
-                                                    icon: Icon(Icons.map,
-                                                        color: Colors.amber),
-                                                    onPressed: () {
-                                                      mapLauncher();
-                                                    },
-                                                  )),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : Container(
-                                  height: 60,
-                                  child: TabBar(
-                                    onTap: onCategorySelected,
-                                    controller: _tabController,
-                                    isScrollable: true,
-                                    indicator: BubbleTabIndicator(
-                                      indicatorHeight: 25.0,
-                                      indicatorColor: Colors.black,
-                                      tabBarIndicatorSize:
-                                          TabBarIndicatorSize.tab,
-                                      // Other flags
-                                      // indicatorRadius: 1,
-                                      // insets: EdgeInsets.all(1),
-                                      // padding: EdgeInsets.all(10)
-                                    ),
-                                    indicatorPadding:
-                                        EdgeInsets.only(left: 5, right: 5),
-                                    tabs: tabs
-                                        .map((e) => _RapidTabWidget(e))
-                                        .toList(),
-                                  ),
-                                )
-                        ],
-                      ),
-                    ),
+                    height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 1), // changes position of shadow
-                        ),
-                      ],
-                      borderRadius: BorderRadius.circular(5),
-                    ),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        )),
+                    child: Padding(
+                        padding: EdgeInsets.only(
+                            top: 20.0, right: 10.0, bottom: 10.0, left: 10.0),
+                        child: TabBar(
+                          onTap: onCategorySelected,
+                          controller: _tabController,
+                          isScrollable: true,
+                          indicator: BubbleTabIndicator(
+                            indicatorHeight: 40.0,
+                            indicatorColor: Colors.grey[500],
+                            tabBarIndicatorSize: TabBarIndicatorSize.tab,
+                            // Other flags
+                            // indicatorRadius: 1,
+                            // insets: EdgeInsets.all(1),
+                            // padding: EdgeInsets.all(10)
+                          ),
+                          indicatorPadding: EdgeInsets.only(left: 5, right: 5),
+                          tabs: tabs.map((e) => _RapidTabWidget(e)).toList(),
+                        )),
                   ),
                 ),
               ],
@@ -407,8 +399,7 @@ class _RapidTabWidget extends StatelessWidget {
           padding: const EdgeInsets.all(10.0),
           child: Text(
             category.name,
-            style: TextStyle(
-                color: category.selected ? Colors.white : Colors.black),
+            style: TextStyle(color: Colors.black),
           ),
         ),
       ),
@@ -448,6 +439,18 @@ class _RappiTabProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 1,
+            offset: Offset(0, 1), // changes position of shadow
+          ),
+        ],
+      ),
       height: productHeight,
       child: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -455,7 +458,7 @@ class _RappiTabProductItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                width: MediaQuery.of(context).size.width * .70,
+                width: MediaQuery.of(context).size.width * .65,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -484,8 +487,8 @@ class _RappiTabProductItem extends StatelessWidget {
                 ),
               ),
               Container(
-                width: 100,
-                height: 100,
+                width: MediaQuery.of(context).size.width * 0.2,
+                height: MediaQuery.of(context).size.width * 0.2,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
@@ -541,8 +544,6 @@ class CategoryWiseProducts {
 
   bool get isCategory => category != null;
 }
-
-
 
 /*headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
